@@ -70,6 +70,40 @@ Wire strippers (to strip ends of wires)
 
 /Assembly/ – Step-by-step build instructions (PDF)
 
+/cad/ – Parametric CadQuery scripts for grinder adapter variants
+
+/docs/ – Dimension references for adapter variants
+
+## Grinder adapter variants
+
+The slow-feeder body is grinder-agnostic; only the **adapter** is grinder-specific.
+The original `Madkat Feedr_EK43_v5` adapter fits an EK43. This fork adds a variant for
+the **Mazzer Super Jolly**:
+
+| Variant | Files | Notes |
+|---|---|---|
+| EK43 (original) | `STL/Madkat Feedr_EK43_v5.step`, `STL/Madkat Feedr_EK43 v5.stl` | Bolt-on flange |
+| Mazzer Super Jolly | `STL/Madkat Feedr_MazzerSJ_v1.step`, `STL/Madkat Feedr_MazzerSJ_v1.stl` | Friction-fit spigot into the ~59 mm bean throat |
+
+### How the Mazzer variant was made
+
+`cad/mazzer_super_jolly_adapter.py` imports the original EK43 STEP solid, keeps the
+**feeder-side** mating geometry verbatim (so it still drops into the existing hub/insert),
+cuts off the EK43 grinder flange, and unions a new friction-fit spigot sized for the
+Super Jolly throat. All grinder-side dimensions are parameters at the top of that file.
+
+```sh
+python3.12 -m venv .venv
+.venv/bin/pip install cadquery trimesh scipy
+.venv/bin/python cad/mazzer_super_jolly_adapter.py   # rebuild STEP + STL
+.venv/bin/python cad/validate_adapter.py             # geometric checks
+```
+
+> ⚠️ **Test-fit first.** The Mazzer dimensions were derived from published specs and a
+> reference design (Thingiverse #4758610), **not from caliper measurements**. The first
+> print should be treated as a test fit. To adjust, change `SPIGOT_OD` (or
+> `SPIGOT_CLEARANCE`) in the script and re-run. See `docs/mazzer-super-jolly-dimensions.md`.
+
 ## You are free to:
 
 Print

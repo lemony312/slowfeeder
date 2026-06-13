@@ -1,0 +1,6 @@
+# Python 3.12 (cadquery-ocp has no wheel for 3.13/3.14 yet).
+#   python3.12 -m venv .venv
+#   .venv/bin/pip install -r cad/requirements.txt
+cadquery==2.7.0
+trimesh==4.12.2
+scipy
