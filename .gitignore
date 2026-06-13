@@ -2,3 +2,6 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# third-party reference (CC-BY, not ours to redistribute)
+Mazzer Super Jolly Input Funnel - 4758610.zip

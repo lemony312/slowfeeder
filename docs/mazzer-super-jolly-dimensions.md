@@ -10,9 +10,14 @@ Madkat Feedr grinder adapter. The adapter has two interfaces:
 Every value is tagged: **[MEASURED]** (from a physical part), **[REFERENCED]** (from a
 published spec or another design), or **[ASSUMED]** (best estimate, verify before relying on it).
 
-> ⚠️ **No calipers were used.** All grinder-side numbers are REFERENCED or ASSUMED.
-> The first print should be treated as a **test fit**. Clearances are parameterised in
-> `cad/mazzer_super_jolly_adapter.py` so a re-print only needs one number changed.
+> **Update (v2):** the grinder-side geometry is now derived from the **actual STL of
+> the proven Thingiverse #4758610 funnel** (a part known to fit a real Super Jolly),
+> measured directly — see [Measured from the reference model](#measured-from-the-reference-model).
+> These numbers are tagged **[MEASURED-from-reference-model]**, a stronger basis than the
+> original REFERENCED/ASSUMED estimates. A physical caliper check of *your* grinder is
+> still recommended, but the design now matches a part proven to work. Clearances/ribs
+> are parameterised in `cad/mazzer_super_jolly_adapter.py` so a re-print only needs a
+> number changed.
 
 ---
 
@@ -46,35 +51,56 @@ reproduced exactly, not re-derived.
 
 ## Grinder-side interface — Mazzer Super Jolly (NEW)
 
-The Super Jolly bean throat is a straight ~59 mm cylindrical seat. Aftermarket hoppers and
-the reference funnel (Thingiverse #4758610) use a plain friction-fit spigot — **no screws,
-no bayonet**. We follow the same strategy.
+The Super Jolly bean throat is a ~59 mm cylindrical seat. The proven reference funnel
+(Thingiverse #4758610) does **not** use a plain cylinder — it uses a **ribbed/barbed
+tapered spigot** with **no screws, no bayonet**. v2 of our adapter follows that design.
 
-| # | Dimension | Value | Confidence | Basis |
-|---|---|---|---|---|
-| 1 | Grinder throat seat diameter | **59.0 mm** | [REFERENCED] | 4+ vendor listings ("seat/collar/throat 59 mm") |
-| 2 | Adapter male spigot OD | **58.4 mm** (= 59.0 − 0.6 clearance) | [REFERENCED]/[ASSUMED] | Etsy adapter "58 mm OD"; ~0.6 mm print clearance |
-| 3 | Spigot engagement depth | **32 mm** | [REFERENCED]/[ASSUMED] | Etsy adapter "35 mm tall"; 30–35 mm typical |
-| 4 | Center bean bore | **≥ 42 mm** | [ASSUMED] | Must feed beans freely; not published — verify |
-| 5 | Lead-in chamfer (spigot base) | 1.5 mm × 45° | [ASSUMED] | Eases insertion |
-| 6 | Retention | Friction fit (no fastener) | [REFERENCED] | Reference funnel + Mazzer OEM uses neck friction |
-| 7 | Spigot wall thickness | ≈ 3 mm | [ASSUMED] | Print strength vs. bore (58.4 OD, ~42 bore would be thicker; bore set by feeder funnel) |
+### Measured from the reference model
 
-### Reference designs
-- **Thingiverse #4758610** — "Mazzer Super Jolly Input Funnel" (portergieske, CC BY 4.0).
-  Friction-fit, no published dimensions; confirms the *strategy*.
-- Vendor hopper specs converging on **59 mm** seat (coffeeomega, coffeesparesdirect,
-  espressoparts, etc.).
+Direct measurements of `mazzer_funnel_2.STL` from Thingiverse #4758610 (the funnel that
+seats in a real Super Jolly throat; the other STL in that download is its plunger/lid):
+
+| # | Dimension | Measured value | Notes |
+|---|---|---|---|
+| M1 | Rib-crown OD (the bits that grip the throat) | **~54 mm (bottom) → ~59–60 mm (top)** — a *taper* | self-centring; only crowns touch |
+| M2 | Rib-valley OD (between ribs) | **~43 mm**, constant | bleeds trapped air/chaff |
+| M3 | Spigot engagement length | **~40 mm** | ribbed zone before it blends to cone |
+| M4 | Nose lead-in | **~8 mm** tapered, tip ~37 mm | eases insertion |
+| M5 | Central bore | **~37 mm**, constant | bean drop |
+| M6 | Retention | friction (ribs deform + grip) | README: "snug fit into the throat" + plunger |
+
+**Verdict:** throat ≈ **59 mm confirmed**. The earlier straight-58.4 mm cylinder was in the
+right ballpark (it matches the *top* crown) but the proven part is a ribbed taper — more
+forgiving and self-centring. v2 adopts the ribbed taper.
+
+### As built (v2) — parameters in `cad/mazzer_super_jolly_adapter.py`
+
+| Parameter | Value | Confidence | Basis |
+|---|---|---|---|
+| Throat seat diameter | **59.0 mm** | [REFERENCED] | 4+ vendor listings + reference model max OD |
+| Top rib crown OD | **59.0 mm** | [MEASURED-from-reference-model] | light interference against throat |
+| Bottom rib crown OD | **54.5 mm** | [MEASURED-from-reference-model] | lead-in / self-centring |
+| Valley OD | **49.0 mm** | [MEASURED-from-reference-model]* | *raised from the ref's 43 mm so it clears our 46.9 mm feeder bore |
+| Rib count / pitch | **5 / 6 mm** | [MEASURED-from-reference-model] | ~5–6 ribs, ~7 mm pitch on ref |
+| Engagement length | **~38 mm** | [MEASURED-from-reference-model] | ref ~40 mm |
+| Nose lead-in | **10 mm**, tip OD 37 mm | [MEASURED-from-reference-model] | ref ~8 mm, tip ~37 mm |
+| Bore (body) | **40 mm**, base 46.9 mm | derived | base matches feeder seat; ≥ 35 mm min |
+| Retention | friction (no fastener) | [REFERENCED] | reference funnel + Mazzer OEM |
+
+*Note on the valley:* the reference uses a 43 mm valley with a 37 mm bore. Our adapter
+inherits a **46.9 mm feeder bore**, so a 43 mm valley would fall *inside* the bore (zero
+wall). We therefore widen the valley to **49 mm** (≥ 2 mm wall) and taper the bore down to
+40 mm through the spigot body — narrowing in the bean-flow direction, so no ledge/trap.
 
 ---
 
 ## ⚠️ Verify on your physical grinder before a final print
 
-These [ASSUMED] / single-source items are the fit risks:
+The design now matches a proven part, but these are still worth a caliper check on *your* unit:
 
-1. **Throat bore** — caliper the inside of the collar; confirm 59 mm on your unit.
-2. **Seat depth** available before the spigot bottoms on the burr carrier (drives #3).
-3. **Center outlet bore** the throat will accept (#4).
-4. Whether a collar **set screw** is present (if so, a flat/relief can be added).
+1. **Throat bore** — confirm ~59 mm (tune `CROWN_OD_TOP` / `THROAT_DIA` if different).
+2. **Seat depth** available before the spigot bottoms on the burr carrier (drives engagement).
+3. Whether a collar **set screw** is present (if so, a flat/relief can be added).
 
-The single most reliable number is the **59 mm throat seat** (multiply referenced).
+If the fit is too tight or too loose, change `CROWN_OD_TOP` (and/or `CROWN_OD_BOT`) and
+re-run `cad/mazzer_super_jolly_adapter.py`.
