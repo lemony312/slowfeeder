@@ -3,14 +3,15 @@
 This document records the measurements driving the Mazzer Super Jolly variant of the
 Madkat Feedr grinder adapter. The adapter has two interfaces:
 
-- **Feeder side** — mates with the slow-feeder hub/insert. **Reused unchanged** from the
-  original EK43 adapter (`STL/Madkat Feedr_EK43_v5.step`).
-- **Grinder side** — drops into the grinder throat. **Re-modeled** for the Super Jolly.
+- **Body side** — the wide flange with the 3 screw holes that bolt the adapter to the
+  feeder. **Reused unchanged** from the original EK43 adapter (`STL/Madkat Feedr_EK43_v5.step`).
+- **Grinder side** — the narrow tube that drops into the grinder throat. **Re-modeled**
+  for the Super Jolly.
 
 Every value is tagged: **[MEASURED]** (from a physical part), **[REFERENCED]** (from a
 published spec or another design), or **[ASSUMED]** (best estimate, verify before relying on it).
 
-> **Update (v3):** the throat diameter (~59 mm) is corroborated by the **actual STL of
+> **Update (v4):** the throat diameter (~59 mm) is corroborated by the **actual STL of
 > the proven Thingiverse #4758610 funnel** (a part known to fit a real Super Jolly),
 > measured directly — see [Measured from the reference model](#measured-from-the-reference-model).
 > The adapter keeps the **clean connector shape of the EK43** and terminates in a smooth
@@ -20,27 +21,36 @@ published spec or another design), or **[ASSUMED]** (best estimate, verify befor
 
 ---
 
-## Coordinate system
+## Coordinate system & orientation
 
-The original STEP solid is built around the **Y axis** (not Z). The feeder mating face
-sits at **Y = −78.5**; the EK43 grinder flange face at **Y = −48.5**. The grinder→feeder
-transition plane is **Y ≈ −59.2**. The CadQuery script cuts the original solid at this
-plane, keeps the feeder portion verbatim, and unions a new Super Jolly spigot below it.
+> **Orientation correction (v4):** earlier versions (v1–v3) had the two ends swapped.
+> The **wide flange with the 3 screw holes (Y = −48.5)** is the **BODY side** — it bolts
+> the adapter to the rest of the feeder and is part of the whole feed process, so it must
+> be preserved. The **narrow tube (Y = −78.5)** is the **GRINDER side** that inserts into
+> the grinder. v4 preserves the flange/screw end verbatim and reshapes only the grinder
+> tube into a Mazzer plug.
+
+The original STEP solid is built around the **Y axis** (not Z):
+
+- **Body face (flange + 3 screw holes):** Y = **−48.5** — PRESERVED
+- **Grinder tube tip:** Y = **−78.5** — RESHAPED into the Mazzer plug
+- **Cut / transition plane:** Y ≈ **−59.2** (all 3 screw holes sit at Y ≥ −58, safely
+  above the cut). The script keeps everything at Y ≥ −59.2 verbatim and rebuilds the
+  tube below it.
 
 ---
 
-## Feeder-side interface (PRESERVED — do not change)
+## Body-side interface (PRESERVED — do not change)
 
-Extracted from `Madkat Feedr_EK43_v5.step` (`MANIFOLD_SOLID_BREP 'BaseModelForAdapters'`).
+The flange end that bolts to the feeder body. Kept verbatim by the boolean-keep, so it
+remains dimensionally identical to the EK43 adapter.
 
 | Feature | Value | Y-range | Confidence |
 |---|---|---|---|
-| Mating end face OD | ⌀51.5 mm | face at Y=−78.5 | High |
-| Outer step / register | ⌀53.0 mm | Y=−78.5 → −77.5 | High |
-| Central through-bore (main) | **⌀49.6 mm** | Y=−78.5 → ≈−66.5 | High |
-| Internal funnel cone | 21.8° half-angle, narrows toward seat | apex ≈ Y=−74.1 | High |
-| Inner seat at transition | ⌀46.9 mm | Y≈−58.25 / −59.2 | High |
-| Locating holes | 4× ⌀1.2 mm | at Y=−66.5 | High |
+| Flange face OD (with mounting ears) | ⌀~114 mm | face at Y=−48.5 | High |
+| 3× mounting screw holes | at XZ (27.3, 20.2), (0, −34), (−33.9, 3.0) | open to Y≈−68 | High |
+| Body bore at cut | ⌀46.9 mm | Y=−59.2 | High |
+| Body OD at cut (becomes seating shoulder) | ⌀62 mm | Y=−59.2 | High |
 | Transition plane (cut line) | **Y = −59.2** | — | High |
 
 Because the script boolean-keeps the original solid above Y=−59.2, these dimensions are
@@ -50,15 +60,16 @@ reproduced exactly, not re-derived.
 
 ## Grinder-side interface — Mazzer Super Jolly (NEW)
 
-The Super Jolly bean throat is a ~59 mm cylindrical collar/seat. The adapter (v3) keeps
-the **clean connector shape of the original EK43 adapter** and simply terminates the
-grinder end in a **smooth cylindrical plug** that drops into that collar by friction —
-**no screws, no bayonet**.
+The Super Jolly bean throat is a ~59 mm cylindrical collar/seat. The adapter (v4) keeps
+the **clean connector shape of the original EK43 adapter** and reshapes only the grinder
+tube into a **smooth cylindrical plug** that drops into that collar by friction —
+**no screws, no bayonet**. The OD step at the cut (62 → 58.4 mm) forms a seating
+shoulder that rests on top of the collar.
 
-> **Design history:** v1 used a straight cylinder; v2 tried a long ribbed/barbed taper
-> copied from the reference funnel — but that read as a "bellows" and diverged from the
-> EK43 connector look. **v3 returns to the clean EK43-style connector** with a smooth
-> plug sized to the measured 59 mm collar, plus two low-profile retention beads.
+> **Design history:** v1 straight cylinder; v2 ribbed "bellows" taper (rejected — wrong
+> look); v3 clean plug but **on the wrong end** (it rebuilt the flange and destroyed the
+> 3 body-mount screw holes). **v4 fixes the orientation:** the flange + screw holes are
+> preserved verbatim and only the grinder tube is reshaped.
 
 ### Measured from the reference model
 
@@ -75,10 +86,10 @@ seats in a real Super Jolly throat; the other STL in that download is its plunge
 | M6 | Retention | friction (ribs deform + grip) | README: "snug fit into the throat" + plunger |
 
 **Verdict:** throat ≈ **59 mm confirmed**. The reference funnel proves a ~58 mm plug
-seats by friction in this collar. v3 uses a clean **58.4 mm smooth plug** (matching the
+seats by friction in this collar. v4 uses a clean **58.4 mm smooth plug** (matching the
 EK43 connector style) into that 59 mm collar, with small retention beads for grip.
 
-### As built (v3) — parameters in `cad/mazzer_super_jolly_adapter.py`
+### As built (v4) — parameters in `cad/mazzer_super_jolly_adapter.py`
 
 | Parameter | Value | Confidence | Basis |
 |---|---|---|---|

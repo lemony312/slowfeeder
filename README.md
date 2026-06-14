@@ -83,18 +83,19 @@ the **Mazzer Super Jolly**:
 | Variant | Files | Notes |
 |---|---|---|
 | EK43 (original) | `STL/Madkat Feedr_EK43_v5.step`, `STL/Madkat Feedr_EK43 v5.stl` | Bolt-on flange |
-| Mazzer Super Jolly | `STL/Madkat Feedr_MazzerSJ_v3.step`, `STL/Madkat Feedr_MazzerSJ_v3.stl` | Clean connector with a friction-fit plug into the ~59 mm throat collar |
+| Mazzer Super Jolly | `STL/Madkat Feedr_MazzerSJ_v4.step`, `STL/Madkat Feedr_MazzerSJ_v4.stl` | Clean connector with a friction-fit plug into the ~59 mm throat collar |
 
 ### How the Mazzer variant was made
 
-`cad/mazzer_super_jolly_adapter.py` imports the original EK43 STEP solid, keeps the
-**feeder-side** mating geometry verbatim (so it still drops into the existing hub/insert),
-cuts off the EK43 grinder flange, and unions a new friction-fit **plug** for the Super
-Jolly throat collar. Like the EK43, it's a **clean cylindrical connector** — the grinder
-end is a smooth ⌀58.4 mm plug (into the ~59 mm collar, confirmed against the proven
-Thingiverse #4758610 funnel) with a tip lead-in chamfer and two low-profile retention
-beads. All grinder-side dimensions are parameters at the top of that file; the fit is set
-by `PLUG_OD`.
+`cad/mazzer_super_jolly_adapter.py` imports the original EK43 STEP solid and keeps the
+**body side verbatim** — the wide flange with the **3 screw holes that bolt the adapter
+to the rest of the feeder** — so the part still mounts to the feeder exactly as the EK43
+one does. It then reshapes **only the grinder tube** (the narrow end that inserts into the
+grinder) into a friction-fit **plug** for the Super Jolly throat collar. Like the EK43,
+it's a **clean cylindrical connector** — the grinder end is a smooth ⌀58.4 mm plug (into
+the ~59 mm collar, confirmed against the proven Thingiverse #4758610 funnel) with a
+seating shoulder, a tip lead-in chamfer, and two low-profile retention beads. The fit is
+set by the single parameter `PLUG_OD`.
 
 ```sh
 python3.12 -m venv .venv
