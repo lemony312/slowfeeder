@@ -1,15 +1,14 @@
 """
-Validation harness for the Mazzer Super Jolly adapter (v2, ribbed spigot).
+Validation harness for the Mazzer Super Jolly adapter (v3, clean plug connector).
 
 No printer available, so we validate geometrically:
-  1. Mesh is watertight + single body (printable shell).
+  1. Mesh is watertight + single body + winding-consistent (printable shell).
   2. Feeder-side mating geometry is preserved vs. the original EK43 adapter
      (the portion at Y <= TRANSITION_Y must be dimensionally identical).
-  3. Grinder-side ribbed spigot meets the Mazzer Super Jolly targets, derived
-     from the proven Thingiverse #4758610 funnel:
-       - max rib crown OD ~= throat dia (light interference, must not exceed it much)
-       - valleys sit inside the throat (air bleed / rib room)
-       - taper present (bottom crown < top crown -> self-centring)
+  3. Grinder-side plug fits the Mazzer Super Jolly throat collar:
+       - plug OD within the friction-fit window of the ~59 mm collar
+       - plug is a clean cylinder (not a long ribbed bellows): OD ~constant along
+         the body apart from small retention beads
        - engagement length in the expected band
   4. Bean bore is unobstructed end-to-end and >= minimum.
 
@@ -25,17 +24,17 @@ import trimesh
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 SRC_STEP = os.path.join(ROOT, "STL", "Madkat Feedr_EK43_v5.step")
-OUT_STL = os.path.join(ROOT, "STL", "Madkat Feedr_MazzerSJ_v2.stl")
-OUT_STEP = os.path.join(ROOT, "STL", "Madkat Feedr_MazzerSJ_v2.step")
+OUT_STL = os.path.join(ROOT, "STL", "Madkat Feedr_MazzerSJ_v3.stl")
+OUT_STEP = os.path.join(ROOT, "STL", "Madkat Feedr_MazzerSJ_v3.step")
 
 # expectations (keep in sync with mazzer_super_jolly_adapter.py)
 TRANSITION_Y = -59.2
 THROAT_DIA = 59.0
-CROWN_OD_TOP = 59.0
-CROWN_OD_BOT = 54.5
+PLUG_OD = 58.4
+BEAD_HEIGHT = 0.4
 MIN_BEAN_BORE = 35.0
 FEEDER_FACE_Y = -78.5
-ENGAGE_MIN, ENGAGE_MAX = 30.0, 45.0   # acceptable spigot engagement length band
+ENGAGE_MIN, ENGAGE_MAX = 20.0, 32.0   # acceptable plug engagement length band
 
 results = []
 
@@ -46,7 +45,6 @@ def check(name, ok, detail=""):
 
 
 def radius_present(solid, r, y):
-    """Is there material at radius r (+X), height y? Probe a 0.6mm cube."""
     box = cq.Solid.makeBox(0.6, 0.6, 0.6, cq.Vector(r - 0.3, y - 0.3, -0.3))
     try:
         return solid.intersect(box).Volume() > 1e-3
@@ -55,7 +53,6 @@ def radius_present(solid, r, y):
 
 
 def outer_radius_at(solid, y):
-    """Approx outer radius via a thin slab section bbox."""
     slab = cq.Solid.makeBox(400, 0.4, 400, cq.Vector(-200, y - 0.2, -200))
     sec = solid.intersect(slab)
     bb = sec.BoundingBox()
@@ -63,7 +60,6 @@ def outer_radius_at(solid, y):
 
 
 def inner_bore_dia_at(solid, y):
-    """Scan +X for first solid material -> inner bore diameter."""
     for i in range(0, 80):
         r = i * 0.5
         if radius_present(solid, r, y):
@@ -93,41 +89,36 @@ def main():
           not radius_present(new, 5.0, FEEDER_FACE_Y + 1.0),
           "(center hollow at feeder face)")
 
-    # --- 3. ribbed spigot vs Mazzer throat ---
-    # Scan the grinder side (Y > transition) for the max outer radius = top crown.
+    # --- 3. plug fits the Mazzer collar and is a CLEAN cylinder ---
     bb = new.BoundingBox()
-    spigot_ys = [TRANSITION_Y + 0.5 + i * 0.5 for i in range(0, 120)]
-    spigot_ys = [y for y in spigot_ys if y < bb.ymax - 0.5]
-    radii = [(y, outer_radius_at(new, y)) for y in spigot_ys]
-    max_r = max(r for _, r in radii)
-    check("max rib crown <= throat (seats, light interference)",
-          max_r * 2 <= THROAT_DIA + 0.3,
-          f"(max crown OD={max_r*2:.2f}, throat={THROAT_DIA})")
-    check("max rib crown reaches throat (actually grips)",
-          max_r * 2 >= THROAT_DIA - 1.5,
-          f"(max crown OD={max_r*2:.2f})")
+    # sample the plug body (skip the shoulder near the transition and the very tip)
+    ys = [y for y in [TRANSITION_Y + 5 + 0.5 * i for i in range(0, 80)]
+          if y < bb.ymax - 3.0]
+    radii = [outer_radius_at(new, y) for y in ys]
+    max_od = max(radii) * 2
+    # body OD excluding beads: the median is the plain wall
+    radii_sorted = sorted(radii)
+    body_od = radii_sorted[len(radii_sorted) // 2] * 2
 
-    # taper: top crown (near transition) larger than bottom crown (near tip)
-    top_region = max(r for y, r in radii if y <= TRANSITION_Y + 12)
-    bot_region = max(r for y, r in radii if y >= TRANSITION_Y + 20)
-    check("spigot tapers (self-centring): top crown > bottom crown",
-          top_region > bot_region + 0.5,
-          f"(top={top_region*2:.2f} bottom={bot_region*2:.2f})")
+    check("plug fits collar (OD within friction window)",
+          (THROAT_DIA - 1.2) <= body_od <= THROAT_DIA,
+          f"(body OD={body_od:.2f}, collar={THROAT_DIA})")
+    check("beads do not exceed collar",
+          max_od <= THROAT_DIA + 0.2,
+          f"(max OD inc. beads={max_od:.2f})")
+    # clean cylinder: body OD nearly constant (swing small — beads are <=0.4mm proud)
+    od_swing = (max(radii) - min(radii)) * 2
+    check("plug is a clean cylinder (not a bellows)",
+          od_swing <= 2.0,
+          f"(OD swing along body={od_swing:.2f} mm, beads ~{2*BEAD_HEIGHT})")
 
-    # ribs present: outer radius varies (crowns vs valleys), not a flat cylinder
-    rr = [r for _, r in radii]
-    check("ribs present (OD varies along spigot)",
-          (max(rr) - min(rr)) > 1.5,
-          f"(OD swing={2*(max(rr)-min(rr)):.2f} mm)")
-
-    # engagement length: span of grinder-side material
     engage = bb.ymax - TRANSITION_Y
     check("engagement length in band",
           ENGAGE_MIN <= engage <= ENGAGE_MAX,
           f"(engage={engage:.1f} mm, band {ENGAGE_MIN}-{ENGAGE_MAX})")
 
     # --- 4. bean bore clear + adequate ---
-    tip_y = bb.ymax - 3.0
+    tip_y = bb.ymax - 2.0
     mid_y = (TRANSITION_Y + bb.ymax) / 2.0
     centers_hollow = all(
         not radius_present(new, 3.0, y)
@@ -136,7 +127,7 @@ def main():
     check("bean bore clear end-to-end", centers_hollow,
           "(center hollow along full length)")
     bore = inner_bore_dia_at(new, mid_y)
-    check("spigot bore >= minimum",
+    check("plug bore >= minimum",
           bore is not None and bore >= MIN_BEAN_BORE - 1,
           f"(bore~={bore})")
 

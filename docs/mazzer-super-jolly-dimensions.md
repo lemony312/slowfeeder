@@ -10,14 +10,13 @@ Madkat Feedr grinder adapter. The adapter has two interfaces:
 Every value is tagged: **[MEASURED]** (from a physical part), **[REFERENCED]** (from a
 published spec or another design), or **[ASSUMED]** (best estimate, verify before relying on it).
 
-> **Update (v2):** the grinder-side geometry is now derived from the **actual STL of
+> **Update (v3):** the throat diameter (~59 mm) is corroborated by the **actual STL of
 > the proven Thingiverse #4758610 funnel** (a part known to fit a real Super Jolly),
 > measured directly — see [Measured from the reference model](#measured-from-the-reference-model).
-> These numbers are tagged **[MEASURED-from-reference-model]**, a stronger basis than the
-> original REFERENCED/ASSUMED estimates. A physical caliper check of *your* grinder is
-> still recommended, but the design now matches a part proven to work. Clearances/ribs
-> are parameterised in `cad/mazzer_super_jolly_adapter.py` so a re-print only needs a
-> number changed.
+> The adapter keeps the **clean connector shape of the EK43** and terminates in a smooth
+> cylindrical plug sized to that collar. A physical caliper check of *your* grinder is
+> still recommended; the plug fit is a single parameter (`PLUG_OD`) in
+> `cad/mazzer_super_jolly_adapter.py`, so a re-print only needs one number changed.
 
 ---
 
@@ -51,9 +50,15 @@ reproduced exactly, not re-derived.
 
 ## Grinder-side interface — Mazzer Super Jolly (NEW)
 
-The Super Jolly bean throat is a ~59 mm cylindrical seat. The proven reference funnel
-(Thingiverse #4758610) does **not** use a plain cylinder — it uses a **ribbed/barbed
-tapered spigot** with **no screws, no bayonet**. v2 of our adapter follows that design.
+The Super Jolly bean throat is a ~59 mm cylindrical collar/seat. The adapter (v3) keeps
+the **clean connector shape of the original EK43 adapter** and simply terminates the
+grinder end in a **smooth cylindrical plug** that drops into that collar by friction —
+**no screws, no bayonet**.
+
+> **Design history:** v1 used a straight cylinder; v2 tried a long ribbed/barbed taper
+> copied from the reference funnel — but that read as a "bellows" and diverged from the
+> EK43 connector look. **v3 returns to the clean EK43-style connector** with a smooth
+> plug sized to the measured 59 mm collar, plus two low-profile retention beads.
 
 ### Measured from the reference model
 
@@ -69,28 +74,26 @@ seats in a real Super Jolly throat; the other STL in that download is its plunge
 | M5 | Central bore | **~37 mm**, constant | bean drop |
 | M6 | Retention | friction (ribs deform + grip) | README: "snug fit into the throat" + plunger |
 
-**Verdict:** throat ≈ **59 mm confirmed**. The earlier straight-58.4 mm cylinder was in the
-right ballpark (it matches the *top* crown) but the proven part is a ribbed taper — more
-forgiving and self-centring. v2 adopts the ribbed taper.
+**Verdict:** throat ≈ **59 mm confirmed**. The reference funnel proves a ~58 mm plug
+seats by friction in this collar. v3 uses a clean **58.4 mm smooth plug** (matching the
+EK43 connector style) into that 59 mm collar, with small retention beads for grip.
 
-### As built (v2) — parameters in `cad/mazzer_super_jolly_adapter.py`
+### As built (v3) — parameters in `cad/mazzer_super_jolly_adapter.py`
 
 | Parameter | Value | Confidence | Basis |
 |---|---|---|---|
-| Throat seat diameter | **59.0 mm** | [REFERENCED] | 4+ vendor listings + reference model max OD |
-| Top rib crown OD | **59.0 mm** | [MEASURED-from-reference-model] | light interference against throat |
-| Bottom rib crown OD | **54.5 mm** | [MEASURED-from-reference-model] | lead-in / self-centring |
-| Valley OD | **49.0 mm** | [MEASURED-from-reference-model]* | *raised from the ref's 43 mm so it clears our 46.9 mm feeder bore |
-| Rib count / pitch | **5 / 6 mm** | [MEASURED-from-reference-model] | ~5–6 ribs, ~7 mm pitch on ref |
-| Engagement length | **~38 mm** | [MEASURED-from-reference-model] | ref ~40 mm |
-| Nose lead-in | **10 mm**, tip OD 37 mm | [MEASURED-from-reference-model] | ref ~8 mm, tip ~37 mm |
-| Bore (body) | **40 mm**, base 46.9 mm | derived | base matches feeder seat; ≥ 35 mm min |
+| Throat collar diameter | **59.0 mm** | [REFERENCED + MEASURED] | 4+ vendor listings + reference model max OD |
+| Plug OD | **58.4 mm** (= 59.0 − 0.6 clearance) | [REFERENCED]/[ASSUMED] | friction fit into the 59 mm collar |
+| Plug engagement length | **~25 mm** | [ASSUMED] | compact, connector-like (EK43 grinder side is short) |
+| Tip lead-in chamfer | **2 mm** | [ASSUMED] | eases insertion |
+| Retention beads | 2× **0.4 mm** proud, 1.5 mm wide | [ASSUMED] | light grip without a "bellows"/thread look |
+| Bore | **46.9 mm** | derived | matches the feeder seat bore exactly; ≥ 35 mm min |
+| Base OD (weld to feeder) | **62 mm** | derived | continues the feeder tube OD cleanly |
 | Retention | friction (no fastener) | [REFERENCED] | reference funnel + Mazzer OEM |
 
-*Note on the valley:* the reference uses a 43 mm valley with a 37 mm bore. Our adapter
-inherits a **46.9 mm feeder bore**, so a 43 mm valley would fall *inside* the bore (zero
-wall). We therefore widen the valley to **49 mm** (≥ 2 mm wall) and taper the bore down to
-40 mm through the spigot body — narrowing in the bean-flow direction, so no ledge/trap.
+The plug is a **clean smooth cylinder** like the EK43 connector body. The fit is set by
+`PLUG_OD`; if it's too tight/loose, change that one number and re-run. The retention
+beads can be disabled with `BEAD_HEIGHT = 0` for a fully smooth plug.
 
 ---
 
@@ -98,9 +101,9 @@ wall). We therefore widen the valley to **49 mm** (≥ 2 mm wall) and taper the 
 
 The design now matches a proven part, but these are still worth a caliper check on *your* unit:
 
-1. **Throat bore** — confirm ~59 mm (tune `CROWN_OD_TOP` / `THROAT_DIA` if different).
-2. **Seat depth** available before the spigot bottoms on the burr carrier (drives engagement).
+1. **Throat collar bore** — confirm ~59 mm (tune `PLUG_OD` / `THROAT_DIA` if different).
+2. **Seat depth** available before the plug bottoms on the burr carrier (drives `PLUG_LENGTH`).
 3. Whether a collar **set screw** is present (if so, a flat/relief can be added).
 
-If the fit is too tight or too loose, change `CROWN_OD_TOP` (and/or `CROWN_OD_BOT`) and
-re-run `cad/mazzer_super_jolly_adapter.py`.
+If the fit is too tight or too loose, change `PLUG_OD` (and re-run
+`cad/mazzer_super_jolly_adapter.py`).

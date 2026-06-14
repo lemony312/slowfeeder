@@ -83,17 +83,18 @@ the **Mazzer Super Jolly**:
 | Variant | Files | Notes |
 |---|---|---|
 | EK43 (original) | `STL/Madkat Feedr_EK43_v5.step`, `STL/Madkat Feedr_EK43 v5.stl` | Bolt-on flange |
-| Mazzer Super Jolly | `STL/Madkat Feedr_MazzerSJ_v2.step`, `STL/Madkat Feedr_MazzerSJ_v2.stl` | Ribbed friction-fit spigot into the ~59 mm bean throat |
+| Mazzer Super Jolly | `STL/Madkat Feedr_MazzerSJ_v3.step`, `STL/Madkat Feedr_MazzerSJ_v3.stl` | Clean connector with a friction-fit plug into the ~59 mm throat collar |
 
 ### How the Mazzer variant was made
 
 `cad/mazzer_super_jolly_adapter.py` imports the original EK43 STEP solid, keeps the
 **feeder-side** mating geometry verbatim (so it still drops into the existing hub/insert),
-cuts off the EK43 grinder flange, and unions a new friction-fit spigot for the Super Jolly
-throat. The spigot is a **ribbed/barbed taper reverse-engineered from the proven
-Thingiverse #4758610 funnel** (a part known to fit a real Super Jolly): rib crowns taper
-from ~54 mm up to ~59 mm, with air-bleed valleys and a tapered nose lead-in. All
-grinder-side dimensions are parameters at the top of that file.
+cuts off the EK43 grinder flange, and unions a new friction-fit **plug** for the Super
+Jolly throat collar. Like the EK43, it's a **clean cylindrical connector** — the grinder
+end is a smooth ⌀58.4 mm plug (into the ~59 mm collar, confirmed against the proven
+Thingiverse #4758610 funnel) with a tip lead-in chamfer and two low-profile retention
+beads. All grinder-side dimensions are parameters at the top of that file; the fit is set
+by `PLUG_OD`.
 
 ```sh
 python3.12 -m venv .venv
@@ -105,7 +106,7 @@ python3.12 -m venv .venv
 > ⚠️ **Test-fit recommended.** The Mazzer spigot is measured from the proven Thingiverse
 > #4758610 funnel (a part known to fit a real Super Jolly), so it should fit — but it has
 > not been verified against caliper measurements of *every* unit. Treat the first print as
-> a test fit. To adjust the grip, change `CROWN_OD_TOP` (and/or `CROWN_OD_BOT`) in the
+> a test fit. To adjust the grip, change `PLUG_OD` in the
 > script and re-run. See `docs/mazzer-super-jolly-dimensions.md`.
 
 ## You are free to:
