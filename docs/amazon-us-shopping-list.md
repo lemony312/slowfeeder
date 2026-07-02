@@ -22,28 +22,26 @@ search term so you buy parts that actually fit.
 
 ---
 
-## 🛒 One-click cart (add all 7 at once)
+## 🛒 Pinned products (direct Amazon links)
 
-Click this single link to add every part below to your Amazon US cart in one shot:
+Amazon retired the old one-click "add all to cart" URL (it now throws "something
+went wrong"), so open each product page directly and click **Add to Cart** — you'll
+also see the live price/stock while you're there.
 
-https://www.amazon.com/gp/aws/cart/add.html?ASIN.1=B09DG3GCGK&Quantity.1=1&ASIN.2=B015A38FUS&Quantity.2=1&ASIN.3=B01J35WBBI&Quantity.3=1&ASIN.4=B0927153HN&Quantity.4=1&ASIN.5=B09V7Z4MT7&Quantity.5=1&ASIN.6=B01AIC8LZU&Quantity.6=1&ASIN.7=B0D3F13DDX&Quantity.7=1
-
-**Before checkout, verify each item** — these are specific products pinned by ASIN.
-Prices and live stock were *not* machine-verified (Amazon blocks automated price
-reads), and ASINs can go out of stock. If a line is missing from your cart, that
-ASIN went stale — use the individual search links below to replace it.
-
-| # | Part | ASIN | Pinned product |
+| # | Part | ASIN | Direct link |
 |---|---|---|---|
-| 1 | N20 gear motor (3-pack) | `B09DG3GCGK` | Acxico 3Pcs Mini N20 Gear Motor DC 3V-6V |
-| 2 | M3×20 countersunk screws (100pk) | `B015A38FUS` | uxcell M3×20 Phillips Flat Head, 304 SS |
-| 3 | M3 hex nuts (100pk) | `B01J35WBBI` | M3 Hex Nut, Stainless Steel |
-| 4 | 12mm latching switch (12pk) | `B0927153HN` | 12mm Mini Latching Push Button, prewired |
-| 5 | 2×AA battery holder w/ leads | `B09V7Z4MT7` | WAYLLSHINE 2×AA Holder with Wire Leads |
-| 6 | Wago 221-412 lever nuts | `B01AIC8LZU` | Wago 221-412 Lever-Nuts, 2-conductor |
-| 7 | 5mm neodymium magnets (20pk) | `B0D3F13DDX` | 5×10mm Round Neodymium Cylinder, N35 |
+| 1 | N20 gear motor (3-pack) | `B09DG3GCGK` | https://www.amazon.com/dp/B09DG3GCGK |
+| 2 | M3×20 countersunk screws (100pk) | `B015A38FUS` | https://www.amazon.com/dp/B015A38FUS |
+| 3 | M3 hex nuts (100pk) | `B01J35WBBI` | https://www.amazon.com/dp/B01J35WBBI |
+| 4 | 12mm latching switch (12pk) | `B0927153HN` | https://www.amazon.com/dp/B0927153HN |
+| 5 | 2×AA battery holder w/ leads | `B09V7Z4MT7` | https://www.amazon.com/dp/B09V7Z4MT7 |
+| 6 | Wago 221-412 lever nuts | `B01AIC8LZU` | https://www.amazon.com/dp/B01AIC8LZU |
+| 7 | 5mm neodymium magnets (20pk) | `B0D3F13DDX` | https://www.amazon.com/dp/B0D3F13DDX |
 
-> **Fitment flags to double-check in the browser:** motor shaft = 3 mm & wires attached (#1);
+> Prices/stock were *not* machine-verified (Amazon blocks automated reads). If a page
+> is dead or out of stock, use the matching search link below to find a replacement.
+>
+> **Fitment flags to double-check:** motor shaft = 3 mm & wires attached (#1);
 > battery holder ≤14 mm thick (#5); magnets exactly 5 mm diameter (#7).
 
 ---
@@ -51,7 +49,13 @@ ASIN went stale — use the individual search links below to replace it.
 ## Shopping links (Amazon US)
 
 ### 1. N20 gear motor with wires — qty 1
-*Need: 3–6 V, 3 mm shaft, wire leads pre-attached.*
+*Need: 3–6 V, 3 mm shaft, wire leads pre-attached. **Low RPM — aim for ~50–60 RPM (at 6 V).***
+
+> The BOM motor (XIITIA B0DZNRRTB1) is rated **~52 RPM @ 3 V / ~104 RPM @ 6 V**. This is a
+> fixed-speed, ON/OFF feeder run directly off 2×AA (~3 V) with **no speed controller** — the
+> rotor sits straight on the motor hub, so motor RPM *is* feed-wheel RPM. If a generic N20
+> listing offers an RPM menu, pick the **~50–60 RPM (≈200:1)** option; avoid the fast
+> 100–300 RPM variants (you can't dial them back). Feed rate is fine-tuned via swappable rotors, not speed.
 
 https://www.amazon.com/s?k=N20+gear+motor+3V-6V+with+wires+3mm+shaft
 
