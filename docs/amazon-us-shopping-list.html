@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Madkat Feedr — Amazon US Shopping List</title>
+<style>
+  :root {
+    --bg: #0f1115; --card: #1a1d24; --ink: #e8eaed; --muted: #9aa0aa;
+    --accent: #ff9900; --accent-ink: #131a22; --line: #2a2e37; --ok: #3ecf8e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0 16px 64px;
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink);
+  }
+  .wrap { max-width: 820px; margin: 0 auto; }
+  header { padding: 40px 0 8px; }
+  h1 { font-size: 1.7rem; margin: 0 0 6px; }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  h2 { font-size: 1.1rem; margin: 36px 0 12px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+  .openall {
+    display: inline-block; background: var(--accent); color: var(--accent-ink);
+    font-weight: 700; padding: 12px 20px; border-radius: 8px; border: 0;
+    cursor: pointer; font-size: 1rem; margin: 4px 0 8px;
+  }
+  .openall:hover { filter: brightness(1.07); }
+  .hint { color: var(--muted); font-size: .85rem; margin: 6px 0 0; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 12px; font-size: .92rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  .item {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 18px; margin: 12px 0; display: flex; gap: 16px; align-items: center;
+    justify-content: space-between; flex-wrap: wrap;
+  }
+  .item .meta { flex: 1 1 320px; }
+  .item h3 { margin: 0 0 4px; font-size: 1.05rem; }
+  .item .crit { color: var(--muted); font-size: .88rem; margin: 0; }
+  .qty { color: var(--accent); font-weight: 700; font-size: .85rem; }
+  .btn {
+    display: inline-block; background: #232934; color: var(--ink); text-decoration: none;
+    padding: 10px 16px; border-radius: 8px; border: 1px solid var(--line); white-space: nowrap;
+    font-weight: 600;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  code { background: #232934; padding: 1px 6px; border-radius: 4px; font-size: .85em; }
+  a { color: var(--accent); }
+  .note { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; }
+  footer { color: var(--muted); font-size: .82rem; margin-top: 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Madkat Feedr — Amazon US shopping list</h1>
+    <p class="sub">Off-the-shelf (non-3D-printed) parts. Fitment criteria baked into every search.</p>
+    <a class="openall" style="text-decoration:none;" target="_blank"
+       href="https://www.amazon.com/gp/aws/cart/add.html?ASIN.1=B09DG3GCGK&amp;Quantity.1=1&amp;ASIN.2=B015A38FUS&amp;Quantity.2=1&amp;ASIN.3=B01J35WBBI&amp;Quantity.3=1&amp;ASIN.4=B0927153HN&amp;Quantity.4=1&amp;ASIN.5=B09V7Z4MT7&amp;Quantity.5=1&amp;ASIN.6=B01AIC8LZU&amp;Quantity.6=1&amp;ASIN.7=B0D3F13DDX&amp;Quantity.7=1">🛒 Add all 7 parts to my Amazon cart</a>
+    <p class="hint">One click adds every pinned product below to your amazon.com cart.
+      <strong>Verify each item before checkout</strong> — prices/stock aren't machine-verified,
+      and if an ASIN goes stale that line just won't appear. Fall back to the individual searches below.</p>
+    <button class="openall" style="background:#232934;color:var(--ink);border:1px solid var(--line);" onclick="openAll()">🔍 Or open all 7 searches in new tabs</button>
+    <p class="hint">If your browser blocks the pop-ups, click "Allow", or open each link below individually.</p>
+  </header>
+
+  <h2>Critical fitment criteria <span style="font-weight:400;color:var(--muted)">(measured from the STL models)</span></h2>
+  <table>
+    <tr><th>Part</th><th>Hard constraint</th><th>Why</th></tr>
+    <tr><td>N20 motor</td><td><strong>3 mm shaft</strong>, wire leads attached</td><td>Hub bore ~3.1 mm; pocket 12.9 × 10.8 mm</td></tr>
+    <tr><td>Switch</td><td><strong>12 mm threaded bushing</strong></td><td>Molded opening is ~11–13 mm round</td></tr>
+    <tr><td>Battery holder</td><td><strong>2×AA, ≤14 mm thick, with leads</strong></td><td>Battery cavity ~13.5 mm thick</td></tr>
+    <tr><td>Magnets</td><td><strong>exactly 5 mm diameter</strong></td><td>Pockets are 5 mm Ø (length/grade non-critical)</td></tr>
+    <tr><td>Screws / nuts</td><td>M3 × 20 mm countersunk</td><td>per BOM</td></tr>
+  </table>
+
+  <h2>Products pinned in the one-click cart</h2>
+  <table>
+    <tr><th>#</th><th>Part</th><th>ASIN</th><th>Pinned product</th></tr>
+    <tr><td>1</td><td>N20 gear motor (3-pack)</td><td><code>B09DG3GCGK</code></td><td>Acxico 3Pcs Mini N20 Gear Motor DC 3V-6V</td></tr>
+    <tr><td>2</td><td>M3×20 countersunk screws (100pk)</td><td><code>B015A38FUS</code></td><td>uxcell M3×20 Phillips Flat Head, 304 SS</td></tr>
+    <tr><td>3</td><td>M3 hex nuts (100pk)</td><td><code>B01J35WBBI</code></td><td>M3 Hex Nut, Stainless Steel</td></tr>
+    <tr><td>4</td><td>12mm latching switch (12pk)</td><td><code>B0927153HN</code></td><td>12mm Mini Latching Push Button, prewired</td></tr>
+    <tr><td>5</td><td>2×AA battery holder w/ leads</td><td><code>B09V7Z4MT7</code></td><td>WAYLLSHINE 2×AA Holder with Wire Leads</td></tr>
+    <tr><td>6</td><td>Wago 221-412 lever nuts</td><td><code>B01AIC8LZU</code></td><td>Wago 221-412 Lever-Nuts, 2-conductor</td></tr>
+    <tr><td>7</td><td>5mm neodymium magnets (20pk)</td><td><code>B0D3F13DDX</code></td><td>5×10mm Round Neodymium Cylinder, N35</td></tr>
+  </table>
+  <p class="hint">Double-check in the browser: motor shaft = 3 mm &amp; wires attached (#1);
+    battery holder ≤14 mm thick (#5); magnets exactly 5 mm diameter (#7).</p>
+
+  <h2>The 7 parts</h2>
+
+  <div class="item">
+    <div class="meta">
+      <h3>1. N20 gear motor with wires <span class="qty">×1</span></h3>
+      <p class="crit">3–6 V, 3 mm shaft, wire leads pre-attached.</p>
+    </div>
+    <a class="btn" target="_blank" href="https://www.amazon.com/s?k=N20+gear+motor+3V-6V+with+wires+3mm+shaft">Search Amazon →</a>
+  </div>
+
+  <div class="item">
+    <div class="meta">
+      <h3>2. M3 × 20 mm countersunk screws <span class="qty">×3</span></h3>
+      <p class="crit">Flat-head machine screws, sold in 50–100 packs.</p>
+    </div>
+    <a class="btn" target="_blank" href="https://www.amazon.com/s?k=M3+x+20mm+countersunk+flat+head+machine+screws">Search Amazon →</a>
+  </div>
+
+  <div class="item">
+    <div class="meta">
+      <h3>3. M3 nuts <span class="qty">×3</span></h3>
+      <p class="crit">Standard hex nuts.</p>
+    </div>
+    <a class="btn" target="_blank" href="https://www.amazon.com/s?k=M3+hex+nuts+stainless">Search Amazon →</a>
+  </div>
+
+  <div class="item">
+    <div class="meta">
+      <h3>4. ON/OFF switch <span class="qty">×1</span></h3>
+      <p class="crit">12 mm threaded-bushing pushbutton (latching / self-locking ON-OFF).</p>
+    </div>
+    <a class="btn" target="_blank" href="https://www.amazon.com/s?k=12mm+push+button+switch+latching+SPST+self-locking">Search Amazon →</a>
+  </div>
+
+  <div class="item">
+    <div class="meta">
+      <h3>5. Battery holder (2×AA) <span class="qty">×1</span></h3>
+      <p class="crit">Slim, ≤14 mm thick, with wire leads.</p>
+    </div>
+    <a class="btn" target="_blank" href="https://www.amazon.com/s?k=2+AA+battery+holder+with+wire+leads+slim">Search Amazon →</a>
+  </div>
+
+  <div class="item">
+    <div class="meta">
+      <h3>6. Wire splice connector <span class="qty">×1</span></h3>
+      <p class="crit">No fitment constraint — any lever-nut works.</p>
+    </div>
+    <a class="btn" target="_blank" href="https://www.amazon.com/s?k=Wago+221-412+lever+nut+connector">Search Amazon →</a>
+  </div>
+
+  <div class="item">
+    <div class="meta">
+      <h3>7. Magnets <span class="qty">×6</span></h3>
+      <p class="crit">Exactly 5 mm diameter neodymium cylinder.</p>
+    </div>
+    <a class="btn" target="_blank" href="https://www.amazon.com/s?k=5mm+x+8mm+neodymium+cylinder+magnet">Search Amazon →</a>
+  </div>
+
+  <h2>Genuine parts (not on Amazon)</h2>
+  <div class="note">
+    <p>The BOM originally specs two manufacturer parts Amazon doesn't carry. The searches above
+    substitute <strong>dimension-matched generics</strong>. For the exact originals, use Digikey (single-unit):</p>
+    <ul>
+      <li><strong>Switch</strong> — Judco 40-4526-00 (~$2.51) →
+        <a target="_blank" href="https://www.digikey.com/en/products/detail/judco-manufacturing-inc/40-4526-00/545PB-ND">Digikey 545PB-ND</a></li>
+      <li><strong>Battery holder</strong> — Keystone 2463 (~$1.36) →
+        <a target="_blank" href="https://www.digikey.com/en/products/detail/keystone-electronics/2463/303812">Digikey</a></li>
+    </ul>
+  </div>
+
+  <footer>
+    Estimated single Amazon US order: <strong>~$57</strong> (mostly leftover multipack stock;
+    true per-feeder material cost ~$15–20). Generated for the Madkat Feedr build.
+  </footer>
+</div>
+
+<script>
+  function openAll() {
+    var links = document.querySelectorAll('.item a.btn');
+    links.forEach(function (a) { window.open(a.href, '_blank'); });
+  }
+</script>
+</body>
+</html>
